@@ -5,131 +5,487 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>モビリティマーケット by KINTO [改変プロトタイプ]</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
 <style>
+  /*
+   * モビリティマーケット by KINTO — 本番サイト実測値に基づくデザイントークン
+   * 画像観察：白背景、ティール系グリーンロゴ、ダークグレーナビ、角丸カード
+   */
   :root {
-    --color-brand-red:    #E8001A;
-    --color-brand-black:  #1A1A1A;
-    --color-bg-page:      #F7F7F5;
-    --color-bg-white:     #FFFFFF;
-    --color-bg-section:   #F2F2EF;
-    --color-text-main:    #1A1A1A;
-    --color-text-sub:     #666666;
-    --color-text-light:   #999999;
-    --color-border:       #E5E5E0;
-    --color-border-dark:  #CCCCCC;
-    --color-hajimete:       #C8A028;
-    --color-hajimete-light: #FBF6E8;
-    --color-hajimete-dark:  #7A5F0F;
+    /* ── 本番サイト実測カラー ── */
+    --color-teal:         #3D8B8B;   /* ロゴ・アクセント（ティール系グリーン） */
+    --color-teal-light:   #E8F4F4;   /* 薄ティール背景 */
+    --color-teal-dark:    #2A6464;   /* ティール濃い目 */
+    --color-nav-btn:      #4A5E6A;   /* ナビボタン背景（ダークグレーブルー） */
+    --color-text-heading: #1F2937;   /* 大見出し（ほぼ黒） */
+    --color-text-body:    #374151;   /* 本文 */
+    --color-text-sub:     #6B7280;   /* サブテキスト */
+    --color-text-light:   #9CA3AF;   /* 薄いテキスト */
+    --color-bg-page:      #FFFFFF;   /* ページ背景：白 */
+    --color-bg-section:   #F9FAFB;   /* セクション背景：極薄グレー */
+    --color-bg-card:      #FFFFFF;
+    --color-border:       #E5E7EB;
+    --color-price:        #1F2937;   /* 価格は太字ダークグレー */
+
+    /* ── 改変コンセプトカラー（はじめての体験） ── */
+    --color-hajimete:        #C8A028;
+    --color-hajimete-light:  #FBF6E8;
+    --color-hajimete-dark:   #7A5F0F;
     --color-hajimete-border: #DFC06A;
-    --max-width: 1080px;
-    --header-height: 56px;
-    --radius-card: 6px;
-    --radius-btn: 4px;
-    --section-py: 60px;
+
+    --max-width:    1080px;
+    --radius-card:  12px;   /* 本番サイトの大きめ角丸 */
+    --radius-btn:   24px;   /* ナビボタンの丸ボタン */
+    --section-py:   56px;
   }
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Noto Sans JP', sans-serif; background: var(--color-bg-page); color: var(--color-text-main); font-size: 14px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--color-bg-page);
+    color: var(--color-text-body);
+    font-size: 14px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
   a { text-decoration: none; color: inherit; }
   img { display: block; max-width: 100%; }
 
-  .proto-bar { background: var(--color-brand-black); color: rgba(255,255,255,0.6); font-size: 11px; text-align: center; padding: 7px 16px; letter-spacing: 0.06em; }
-  .proto-bar strong { color: var(--color-hajimete); font-weight: 700; }
+  /* ── プロトタイプバー ── */
+  .proto-bar {
+    background: #1F2937;
+    color: rgba(255,255,255,0.55);
+    font-size: 11px;
+    text-align: center;
+    padding: 7px 16px;
+    letter-spacing: 0.06em;
+  }
+  .proto-bar strong { color: var(--color-hajimete); }
 
-  .site-header { height: var(--header-height); background: var(--color-brand-black); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; position: sticky; top: 0; z-index: 200; }
-  .site-logo { display: flex; align-items: center; gap: 10px; }
-  .site-logo img { height: 22px; width: auto; filter: brightness(0) invert(1); }
-  .site-logo-text { font-size: 13px; font-weight: 700; color: #fff; letter-spacing: 0.04em; white-space: nowrap; }
-  .header-nav { display: flex; align-items: center; gap: 20px; }
-  .header-nav a { color: rgba(255,255,255,0.75); font-size: 12px; letter-spacing: 0.04em; transition: color 0.15s; white-space: nowrap; }
-  .header-nav a:hover { color: #fff; }
-  .header-nav a.nav-login { border: 1px solid rgba(255,255,255,0.3); padding: 5px 14px; border-radius: var(--radius-btn); color: #fff; }
-  .header-nav a.nav-login:hover { background: rgba(255,255,255,0.1); }
+  /* ─────────────────────────────
+     HEADER — 白背景、ティールロゴ
+  ───────────────────────────── */
+  .site-header {
+    background: #fff;
+    border-bottom: 1px solid var(--color-border);
+    padding: 16px 24px 12px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+  }
+  /* ロゴ：本番サイトの手書き風フォント+ティール色を再現 */
+  .site-logo-wrap {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+  }
+  .site-logo-main {
+    font-family: 'Klee One', 'Noto Sans JP', cursive;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--color-teal);
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    display: block;
+  }
+  .site-logo-sub {
+    font-size: 11px;
+    color: var(--color-text-sub);
+    letter-spacing: 0.12em;
+    display: block;
+    margin-top: 2px;
+  }
+  .site-logo-sub strong {
+    font-style: italic;
+    font-weight: 700;
+    color: var(--color-text-sub);
+  }
 
-  .hero { position: relative; background: var(--color-brand-black); overflow: hidden; min-height: 320px; display: flex; align-items: center; }
-  .hero-bg { position: absolute; inset: 0; background-image: url('https://mobima.kinto-jp.com/file/top/pc/landscape_car_mv1.png'); background-size: cover; background-position: center 60%; opacity: 0.35; }
-  .hero-content { position: relative; z-index: 1; max-width: var(--max-width); margin: 0 auto; padding: 64px 32px 56px; width: 100%; }
-  .hero-eyebrow { display: inline-flex; align-items: center; background: var(--color-hajimete); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 2px; letter-spacing: 0.1em; margin-bottom: 20px; }
-  .hero h1 { font-size: clamp(24px, 4vw, 38px); font-weight: 700; color: #fff; line-height: 1.45; margin-bottom: 16px; letter-spacing: 0.02em; }
-  .hero h1 em { font-style: normal; color: var(--color-hajimete); }
-  .hero-sub { color: rgba(255,255,255,0.65); font-size: 13px; max-width: 460px; margin-bottom: 32px; line-height: 1.8; }
-  .hero-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-  .btn-red { display: inline-block; background: var(--color-brand-red); color: #fff; font-size: 13px; font-weight: 700; padding: 11px 24px; border-radius: var(--radius-btn); letter-spacing: 0.04em; border: none; cursor: pointer; transition: opacity 0.15s; }
-  .btn-red:hover { opacity: 0.85; }
-  .btn-ghost { display: inline-block; background: transparent; color: rgba(255,255,255,0.8); font-size: 13px; padding: 10px 24px; border-radius: var(--radius-btn); border: 1px solid rgba(255,255,255,0.35); cursor: pointer; transition: border-color 0.15s, color 0.15s; }
-  .btn-ghost:hover { border-color: rgba(255,255,255,0.7); color: #fff; }
+  /* ─────────────────────────────
+     HERO — MV画像＋説明文（本番準拠）
+  ───────────────────────────── */
+  .hero {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 24px 24px 0;
+  }
+  .hero-mv {
+    width: 100%;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    position: relative;
+    background: #C8E8E8;
+    aspect-ratio: 16/6;
+  }
+  .hero-mv img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero-text {
+    text-align: center;
+    padding: 28px 16px 20px;
+  }
+  .hero-text p {
+    font-size: 15px;
+    color: var(--color-text-body);
+    line-height: 1.9;
+    margin-bottom: 12px;
+  }
+  .hero-text a {
+    color: var(--color-teal);
+    font-size: 14px;
+    text-decoration: underline;
+  }
 
-  .notice-bar { background: #fff; border-bottom: 1px solid var(--color-border); padding: 10px 24px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--color-text-sub); }
-  .notice-bar img { width: 14px; height: 14px; flex-shrink: 0; }
-  .notice-label { font-weight: 700; color: var(--color-text-main); flex-shrink: 0; }
+  /* ─────────────────────────────
+     お知らせ
+  ───────────────────────────── */
+  .notice-bar {
+    max-width: var(--max-width);
+    margin: 0 auto 8px;
+    padding: 0 24px;
+  }
+  .notice-inner {
+    background: var(--color-bg-section);
+    border-radius: 8px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--color-text-body);
+  }
+  .notice-label {
+    font-weight: 700;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
 
-  .category-nav { background: #fff; border-bottom: 1px solid var(--color-border); padding: 0 24px; display: flex; align-items: center; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-  .category-nav::-webkit-scrollbar { display: none; }
-  .category-nav a { display: flex; align-items: center; padding: 14px 14px; font-size: 12px; color: var(--color-text-sub); white-space: nowrap; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; flex-shrink: 0; }
-  .category-nav a:hover { color: var(--color-text-main); }
-  .category-nav a.active { color: var(--color-brand-red); border-bottom-color: var(--color-brand-red); font-weight: 700; }
-  .category-nav a.hajimete-tab { color: var(--color-hajimete-dark); }
-  .category-nav a.hajimete-tab.active { color: var(--color-hajimete); border-bottom-color: var(--color-hajimete); }
+  /* ─────────────────────────────
+     メニュー選択ナビ（本番のダークボタン）
+  ───────────────────────────── */
+  .menu-nav {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 16px 24px;
+  }
+  .menu-nav-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-text-sub);
+    text-align: center;
+    margin-bottom: 10px;
+    letter-spacing: 0.04em;
+  }
+  .menu-nav-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .menu-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--color-nav-btn);
+    color: #fff;
+    border-radius: var(--radius-btn);
+    padding: 14px 24px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .menu-nav-btn:hover { opacity: 0.88; }
+  .menu-nav-btn img { width: 20px; height: 20px; filter: brightness(0) invert(1); flex-shrink: 0; }
+  .menu-nav-btn.hajimete-btn {
+    background: var(--color-hajimete);
+    font-weight: 700;
+  }
 
-  .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+  /* ─────────────────────────────
+     カテゴリフィルター
+  ───────────────────────────── */
+  .category-scroll {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 12px 24px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .category-scroll::-webkit-scrollbar { display: none; }
+  .category-inner {
+    display: flex;
+    gap: 8px;
+    width: max-content;
+  }
+  .cat-chip {
+    display: inline-block;
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--color-border);
+    background: #fff;
+    color: var(--color-text-sub);
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: all 0.15s;
+  }
+  .cat-chip:hover { border-color: var(--color-teal); color: var(--color-teal); }
+  .cat-chip.active { background: var(--color-teal); border-color: var(--color-teal); color: #fff; }
+  .cat-chip.hajimete-chip.active { background: var(--color-hajimete); border-color: var(--color-hajimete); }
+
+  /* ─────────────────────────────
+     LAYOUT
+  ───────────────────────────── */
+  .container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
   .section-wrap { padding: var(--section-py) 0; }
   .section-wrap.bg-gray { background: var(--color-bg-section); }
-  .section-wrap.bg-white { background: var(--color-bg-white); }
+  .hajimete-section-wrap {
+    background: var(--color-hajimete-light);
+    border-top: 3px solid var(--color-hajimete);
+    padding: var(--section-py) 0;
+  }
 
-  .hajimete-section-wrap { background: var(--color-hajimete-light); border-top: 3px solid var(--color-hajimete); border-bottom: 1px solid var(--color-hajimete-border); padding: var(--section-py) 0; }
+  /* ─────────────────────────────
+     セクションヘッダー（本番準拠）
+  ───────────────────────────── */
+  .section-head {
+    margin-bottom: 28px;
+  }
+  /* 本番サイト：大きな英語タイトル + 小さなアイコン付き日本語ラベル */
+  .section-title-en {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--color-text-heading);
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+  .section-title-en.hajimete-en { color: var(--color-hajimete-dark); }
+  .section-title-ja-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .section-title-ja-row img { width: 18px; height: 18px; flex-shrink: 0; }
+  .section-title-ja {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-text-body);
+  }
+  .section-desc {
+    font-size: 13px;
+    color: var(--color-text-sub);
+    line-height: 1.8;
+    max-width: 600px;
+  }
+  .section-head-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .section-more-link {
+    font-size: 13px;
+    color: var(--color-teal);
+    white-space: nowrap;
+    padding-top: 4px;
+    flex-shrink: 0;
+  }
+  .section-more-link:hover { text-decoration: underline; }
 
-  .section-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--color-border); gap: 16px; }
-  .section-head-left { display: flex; align-items: flex-start; gap: 14px; }
-  .section-icon { width: 36px; height: 36px; flex-shrink: 0; margin-top: 2px; }
-  .section-head-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-text-light); margin-bottom: 4px; }
-  .section-head-title { font-size: 18px; font-weight: 700; color: var(--color-text-main); line-height: 1.3; margin-bottom: 4px; }
-  .section-head-title.hajimete-title { color: var(--color-hajimete-dark); }
-  .section-head-desc { font-size: 12px; color: var(--color-text-sub); line-height: 1.7; }
-  .section-head-link { font-size: 12px; color: var(--color-brand-red); white-space: nowrap; flex-shrink: 0; padding-top: 4px; }
-  .section-head-link:hover { text-decoration: underline; }
-
-  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
-  .chip { font-size: 12px; padding: 5px 14px; border-radius: 20px; border: 1px solid var(--color-border-dark); background: #fff; color: var(--color-text-sub); cursor: pointer; font-family: 'Noto Sans JP', sans-serif; transition: all 0.15s; white-space: nowrap; }
-  .chip:hover { border-color: var(--color-text-main); color: var(--color-text-main); }
+  /* ─────────────────────────────
+     フィルターチップ（はじめてセクション内）
+  ───────────────────────────── */
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .chip {
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--color-border);
+    background: #fff;
+    color: var(--color-text-sub);
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: all 0.15s;
+  }
+  .chip:hover { border-color: var(--color-hajimete); color: var(--color-hajimete-dark); }
   .chip.active { background: var(--color-hajimete); border-color: var(--color-hajimete); color: #fff; }
 
-  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-  .card { background: #fff; border-radius: var(--radius-card); border: 1px solid var(--color-border); overflow: hidden; display: flex; flex-direction: column; transition: box-shadow 0.2s; color: var(--color-text-main); }
-  .card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-  .card.hajimete { border-color: var(--color-hajimete-border); border-top: 3px solid var(--color-hajimete); }
-  .card-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: var(--color-bg-section); }
-  .card-body { padding: 14px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
-  .badge-row { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
-  .badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 2px; letter-spacing: 0.04em; }
-  .badge-hajimete { background: var(--color-hajimete); color: #fff; }
-  .badge-red { background: var(--color-brand-red); color: #fff; }
-  .badge-gray { background: var(--color-bg-section); color: var(--color-text-sub); }
-  .card-title { font-size: 13px; font-weight: 500; line-height: 1.55; color: var(--color-text-main); }
-  .hajimete-prefix { font-weight: 700; color: var(--color-hajimete-dark); }
-  .card-price { font-size: 12px; color: var(--color-text-sub); margin-top: auto; padding-top: 6px; border-top: 1px solid var(--color-border); }
-  .card-price strong { color: var(--color-brand-red); font-size: 14px; font-weight: 700; }
+  /* ─────────────────────────────
+     カードグリッド（本番：2列、大きめ角丸）
+  ───────────────────────────── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  @media (min-width: 768px) {
+    .card-grid { grid-template-columns: repeat(3, 1fr); }
+  }
 
-  .concept-block { background: var(--color-brand-black); padding: 52px 24px; text-align: center; }
-  .concept-block h2 { font-size: clamp(20px, 3vw, 28px); font-weight: 700; color: #fff; line-height: 1.5; margin-bottom: 12px; }
+  .card {
+    background: var(--color-bg-card);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s;
+    color: var(--color-text-body);
+    border: none;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+  .card.hajimete { box-shadow: 0 1px 4px rgba(200,160,40,0.15); }
+  .card.hajimete:hover { box-shadow: 0 6px 20px rgba(200,160,40,0.25); }
+
+  .card-img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    background: var(--color-bg-section);
+  }
+  .card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  /* 本番サイト：画像の下部にタイトル・価格オーバーレイ */
+  .card-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.65));
+    padding: 24px 12px 12px;
+  }
+  .card-overlay-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    line-height: 1.4;
+    margin-bottom: 4px;
+  }
+  .card-overlay-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .card-overlay-price .price-point {
+    font-size: 12px;
+    font-weight: 400;
+    opacity: 0.85;
+    margin-left: 4px;
+  }
+
+  /* オーバーレイなし（シンプルカード）*/
+  .card-body {
+    padding: 12px 14px 14px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card-title {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--color-text-body);
+  }
+  .hajimete-prefix { font-weight: 700; color: var(--color-hajimete-dark); }
+  .card-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-price);
+    margin-top: auto;
+  }
+  .card-price .price-sub {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--color-text-sub);
+  }
+
+  /* バッジ */
+  .badge-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 4px; }
+  .badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 3px; }
+  .badge-hajimete { background: var(--color-hajimete); color: #fff; }
+  .badge-teal { background: var(--color-teal); color: #fff; }
+  .badge-gray { background: var(--color-bg-section); color: var(--color-text-sub); border: 1px solid var(--color-border); }
+
+  /* ─────────────────────────────
+     コンセプトブロック
+  ───────────────────────────── */
+  .concept-block {
+    background: #1F2937;
+    padding: 52px 24px;
+    text-align: center;
+  }
+  .concept-block h2 {
+    font-size: clamp(20px, 3vw, 28px);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
   .concept-block h2 em { font-style: normal; color: var(--color-hajimete); }
   .concept-block p { font-size: 13px; color: rgba(255,255,255,0.55); max-width: 440px; margin: 0 auto; }
 
-  .site-footer { background: var(--color-brand-black); padding: 40px 24px 32px; }
-  .footer-links-row { max-width: var(--max-width); margin: 0 auto; display: flex; justify-content: center; flex-wrap: wrap; gap: 16px 24px; margin-bottom: 24px; }
-  .footer-links-row a { font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: 0.04em; }
-  .footer-links-row a:hover { color: rgba(255,255,255,0.8); }
-  .footer-logos { max-width: var(--max-width); margin: 0 auto 24px; display: flex; justify-content: center; gap: 24px; align-items: center; flex-wrap: wrap; }
+  /* ─────────────────────────────
+     FOOTER
+  ───────────────────────────── */
+  .site-footer {
+    background: #1F2937;
+    padding: 40px 24px 32px;
+    margin-top: 0;
+  }
+  .footer-logos {
+    max-width: var(--max-width);
+    margin: 0 auto 24px;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
   .footer-logos img { height: 20px; filter: brightness(0) invert(0.5); }
-  .footer-copy { text-align: center; font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 0.04em; }
-  .proto-note { text-align: center; font-size: 10px; color: rgba(255,255,255,0.2); margin-bottom: 8px; letter-spacing: 0.08em; }
+  .footer-links-row {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    margin-bottom: 20px;
+  }
+  .footer-links-row a { font-size: 11px; color: rgba(255,255,255,0.4); }
+  .footer-links-row a:hover { color: rgba(255,255,255,0.8); }
+  .footer-copy { text-align: center; font-size: 11px; color: rgba(255,255,255,0.25); }
+  .proto-note { text-align: center; font-size: 10px; color: rgba(255,255,255,0.18); margin-bottom: 8px; letter-spacing: 0.08em; }
+
   .card.hidden { display: none; }
 
   @media (max-width: 640px) {
-    .site-header { padding: 0 16px; }
-    .header-nav a:not(.nav-login) { display: none; }
-    .hero-content { padding: 48px 16px 40px; }
+    .site-logo-main { font-size: 22px; }
+    .hero { padding: 16px 16px 0; }
     .container { padding: 0 16px; }
-    .category-nav { padding: 0 16px; }
+    .notice-bar { padding: 0 16px; }
+    .menu-nav { padding: 16px 16px; }
+    .section-title-en { font-size: 24px; }
   }
 </style>
 </head>
@@ -137,64 +493,101 @@
 
 <div class="proto-bar"><strong>改変プロトタイプ</strong>　「はじめての体験」コンセプト追加案 — 社内検討用</div>
 
+<!-- ─── HEADER ─── -->
 <header class="site-header">
-  <a href="#" class="site-logo">
-    <img src="https://mobima.kinto-jp.com/images/logo/pc/kinto_logo.svg" alt="KINTO" onerror="this.style.display='none'">
-    <span class="site-logo-text">モビリティマーケット</span>
+  <a href="#" class="site-logo-wrap">
+    <span class="site-logo-main">モビリティマーケット</span>
+    <span class="site-logo-sub">by <strong>KiNTO</strong></span>
   </a>
-  <nav class="header-nav">
-    <a href="#hajimete">はじめての体験</a>
-    <a href="#special-offers">割引メニュー</a>
-    <a href="#point-exchange">ポイント交換</a>
-    <a href="#general">一般販売</a>
-    <a href="#" class="nav-login">ログイン</a>
-  </nav>
 </header>
 
-<section class="hero">
-  <div class="hero-bg" aria-hidden="true"></div>
-  <div class="hero-content">
-    <div class="hero-eyebrow">New 2026</div>
-    <h1>KINTOで、<em>はじめての体験</em>を。</h1>
-    <p class="hero-sub">移動と共に広がる、新しい体験の扉。<br>KINTO契約者だから安心して踏み出せる、<br>人生初の体験が集まっています。</p>
-    <div class="hero-btns">
-      <a href="#hajimete" class="btn-red">はじめての体験を探す</a>
-      <a href="#special-offers" class="btn-ghost">すべての優待を見る</a>
-    </div>
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <div class="hero-mv">
+    <img
+      src="https://mobima.kinto-jp.com/file/top/pc/landscape_car_mv1.png"
+      alt="モビリティマーケット"
+      onerror="this.parentElement.style.background='#C8E8E8'">
   </div>
-</section>
-
-<div class="notice-bar">
-  <img src="https://mobima.kinto-jp.com/images/icon/icon-info.svg" alt="" onerror="this.style.display='none'">
-  <span class="notice-label">お知らせ</span>
-  <span>「はじめての体験」カテゴリを追加しました。KINTOご契約者様以外の方もご利用いただける一般販売メニューも引き続き展開中です。</span>
+  <div class="hero-text">
+    <p>
+      モビリティマーケットは、「新しい移動のよろこび」を発見できるサイトです。<br>
+      KINTOご契約者様向け優待メニューもご用意しております。
+    </p>
+    <a href="https://mobima.kinto-jp.com/about_us" target="_blank">モビリティマーケットについて</a>
+  </div>
 </div>
 
-<nav class="category-nav">
-  <a href="#hajimete" class="hajimete-tab active">★ はじめての体験</a>
-  <a href="#special-offers">すべての優待</a>
-  <a href="#">ゴルフ</a>
-  <a href="#">アウトドア</a>
-  <a href="#">洗車・コーティング</a>
-  <a href="#">体験・レジャー</a>
-  <a href="#">レンタル</a>
-  <a href="#">クルマ・おでかけ用品</a>
-  <a href="#general">KINTOオリジナル商品</a>
-  <a href="#">その他</a>
-</nav>
+<!-- ─── お知らせ ─── -->
+<div class="notice-bar">
+  <div class="notice-inner">
+    <span class="notice-label">
+      <img src="https://mobima.kinto-jp.com/images/icon/icon-info.svg" width="14" height="14" alt="" onerror="this.style.display='none'">
+      お知らせ
+    </span>
+    <span>「はじめての体験」カテゴリを新設しました。KINTOご契約者様以外の方もご利用いただける一般販売メニューも引き続き展開中です。</span>
+  </div>
+</div>
 
+<!-- ─── メニューナビ ─── -->
+<div class="menu-nav">
+  <p class="menu-nav-label">KINTOご契約者様向け優待</p>
+  <div class="menu-nav-btns">
+    <a href="#hajimete" class="menu-nav-btn hajimete-btn">
+      ★　はじめての体験メニュー（NEW）
+    </a>
+    <a href="#special-offers" class="menu-nav-btn">
+      <img src="https://mobima.kinto-jp.com/images/icon/ranking-outline.svg" alt="" onerror="this.style.display='none'">
+      割引メニュー
+    </a>
+    <a href="#point-exchange" class="menu-nav-btn">
+      <img src="https://mobima.kinto-jp.com/images/icon/point-change.svg" alt="" onerror="this.style.display='none'">
+      ポイント交換メニュー
+    </a>
+  </div>
+  <p class="menu-nav-label" style="margin-top:20px;">どなたでもご利用いただけるメニュー</p>
+  <div class="menu-nav-btns">
+    <a href="#general" class="menu-nav-btn">
+      <img src="https://mobima.kinto-jp.com/images/icon/icon_general.svg" alt="" onerror="this.style.display='none'">
+      一般販売メニュー
+    </a>
+  </div>
+</div>
+
+<!-- ─── カテゴリ ─── -->
+<div class="category-scroll">
+  <div class="category-inner">
+    <a href="#" class="cat-chip hajimete-chip active">★ はじめての体験</a>
+    <a href="#" class="cat-chip">すべての優待</a>
+    <a href="#" class="cat-chip">ゴルフ</a>
+    <a href="#" class="cat-chip">アウトドア</a>
+    <a href="#" class="cat-chip">洗車・コーティング</a>
+    <a href="#" class="cat-chip">体験・レジャー</a>
+    <a href="#" class="cat-chip">レンタル</a>
+    <a href="#" class="cat-chip">クルマ・おでかけ用品</a>
+    <a href="#" class="cat-chip">KINTOオリジナル商品</a>
+    <a href="#" class="cat-chip">その他</a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     ★ NEW: はじめての体験
+════════════════════════════════ -->
 <section class="hajimete-section-wrap" id="hajimete">
   <div class="container">
     <div class="section-head">
-      <div class="section-head-left">
-        <div class="section-head-texts">
-          <div class="section-head-label">New Category 2026</div>
-          <h2 class="section-head-title hajimete-title">はじめての体験メニュー</h2>
-          <p class="section-head-desc">KINTOの安心感を土台に、ずっとやってみたかったことへ。<br>初めての方でも気軽に体験できるメニューを厳選しました。</p>
+      <div class="section-head-row">
+        <div>
+          <h2 class="section-title-en hajimete-en">First Experience</h2>
+          <div class="section-title-ja-row">
+            <span class="section-title-ja">はじめての体験メニュー</span>
+          </div>
+          <p class="section-desc">KINTOの安心感を土台に、ずっとやってみたかったことへ。<br>初めての方でも気軽に体験できるメニューを厳選しました。</p>
         </div>
+        <a href="#" class="section-more-link" style="color: var(--color-hajimete-dark);">一覧を見る →</a>
       </div>
-      <a href="#" class="section-head-link">一覧を見る →</a>
     </div>
+
     <div class="filter-row" id="hajimete-filter">
       <button class="chip active" onclick="filterCards('all',this)">すべて</button>
       <button class="chip" onclick="filterCards('car',this)">クルマ体験</button>
@@ -202,154 +595,209 @@
       <button class="chip" onclick="filterCards('golf',this)">ゴルフ</button>
       <button class="chip" onclick="filterCards('leisure',this)">レジャー</button>
     </div>
+
     <div class="card-grid" id="hajimete-grid">
+
       <a href="#" class="card hajimete" data-cat="car">
-        <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2023/03/10-041503/toyotarent_main2.jpg" alt="" onerror="this.style.background='#D4C8A8'">
-        <div class="card-body">
-          <div class="badge-row"><span class="badge badge-hajimete">はじめて</span><span class="badge badge-gray">クルマ体験</span></div>
-          <p class="card-title"><span class="hajimete-prefix">はじめての </span>【Vintage club by KINTO】特選旧車レンタカー</p>
-          <div class="card-price">専門スタッフ同行 <strong>特別優待価格</strong></div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2023/03/10-041503/toyotarent_main2.jpg" alt="" onerror="this.parentElement.style.background='#D4C8A8'">
+          <div class="card-overlay">
+            <p class="card-overlay-title"><span style="font-weight:700;color:#F0D070;">はじめての </span>【Vintage club by KINTO】特選旧車レンタカー</p>
+            <p class="card-overlay-price">特別優待価格</p>
+          </div>
         </div>
       </a>
+
       <a href="https://mobima.kinto-jp.com/posts/special-offers/36945/mushupgolf_discount" class="card hajimete" data-cat="golf" target="_blank">
-        <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2024/12/16-084004/IMG_6983.jpg" alt="" onerror="this.style.background='#C8DDB5'">
-        <div class="card-body">
-          <div class="badge-row"><span class="badge badge-hajimete">はじめて</span><span class="badge badge-gray">ゴルフ</span></div>
-          <p class="card-title"><span class="hajimete-prefix">はじめての </span>【MASH UP GOLF】月額定額ゴルフラウンド</p>
-          <div class="card-price">毎月 <strong>1,000円OFF</strong></div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2024/12/16-084004/IMG_6983.jpg" alt="" onerror="this.parentElement.style.background='#C8DDB5'">
+          <div class="card-overlay">
+            <p class="card-overlay-title"><span style="font-weight:700;color:#F0D070;">はじめての </span>【MASH UP GOLF】月額定額ゴルフラウンド</p>
+            <p class="card-overlay-price">毎月 1,000円OFF</p>
+          </div>
         </div>
       </a>
+
       <a href="#" class="card hajimete" data-cat="outdoor">
-        <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2026/03/10-042506/IMG_1781.jpg" alt="" onerror="this.style.background='#B8D4C8'">
-        <div class="card-body">
-          <div class="badge-row"><span class="badge badge-hajimete">はじめて</span><span class="badge badge-gray">アウトドア</span></div>
-          <p class="card-title"><span class="hajimete-prefix">はじめての </span>冬キャンプ【モビキャン × KINTO】</p>
-          <div class="card-price">装備レンタル込み <strong>初心者歓迎</strong></div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2026/03/10-042506/IMG_1781.jpg" alt="" onerror="this.parentElement.style.background='#B8D4C8'">
+          <div class="card-overlay">
+            <p class="card-overlay-title"><span style="font-weight:700;color:#F0D070;">はじめての </span>冬キャンプ【モビキャン × KINTO】</p>
+            <p class="card-overlay-price">初心者歓迎</p>
+          </div>
         </div>
       </a>
+
       <a href="https://mobima.kinto-jp.com/posts/lesson/31537/first_driving_school" class="card hajimete" data-cat="car" target="_blank">
-        <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2022/06/07-083004/FIRSTDRIVING_main1.jpg" alt="" onerror="this.style.background='#D0C8E0'">
-        <div class="card-body">
-          <div class="badge-row"><span class="badge badge-hajimete">はじめて</span><span class="badge badge-red">限定</span><span class="badge badge-gray">クルマ体験</span></div>
-          <p class="card-title"><span class="hajimete-prefix">はじめての </span>【FDS】出張型ペーパードライバー講習</p>
-          <div class="card-price"><strong>5,000〜8,000円OFF</strong></div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2022/06/07-083004/FIRSTDRIVING_main1.jpg" alt="" onerror="this.parentElement.style.background='#D0C8E0'">
+          <div class="card-overlay">
+            <p class="card-overlay-title"><span style="font-weight:700;color:#F0D070;">はじめての </span>【FDS】出張型ペーパードライバー講習</p>
+            <p class="card-overlay-price">5,000〜8,000円OFF</p>
+          </div>
         </div>
       </a>
+
       <a href="https://mobima.kinto-jp.com/posts/special-offers/6669/toyotarent_preferential" class="card hajimete" data-cat="car" target="_blank">
-        <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2023/03/10-041503/toyotarent_main2.jpg" alt="" onerror="this.style.background='#D5E0D0'">
-        <div class="card-body">
-          <div class="badge-row"><span class="badge badge-hajimete">はじめて</span><span class="badge badge-gray">クルマ体験</span></div>
-          <p class="card-title"><span class="hajimete-prefix">はじめての </span>【トヨタレンタカー】安心ドライブ体験</p>
-          <div class="card-price"><strong>20〜50%OFF</strong></div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2023/03/10-041503/toyotarent_main2.jpg" alt="" onerror="this.parentElement.style.background='#D5E0D0'">
+          <div class="card-overlay">
+            <p class="card-overlay-title"><span style="font-weight:700;color:#F0D070;">はじめての </span>【トヨタレンタカー】安心ドライブ体験</p>
+            <p class="card-overlay-price">20〜50%OFF</p>
+          </div>
         </div>
       </a>
+
       <a href="https://mobima.kinto-jp.com/posts/leisure/42123/asoview_family" class="card hajimete" data-cat="leisure" target="_blank">
-        <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2025/10/15-003008/こどもとおでかけギフトKV_1920×1080.png" alt="" onerror="this.style.background='#E8D5C0'">
-        <div class="card-body">
-          <div class="badge-row"><span class="badge badge-hajimete">はじめて</span><span class="badge badge-gray">レジャー</span></div>
-          <p class="card-title"><span class="hajimete-prefix">はじめての </span>家族おでかけギフト｜アソビュー！</p>
-          <div class="card-price">10,980円 / <strong>12,200P交換可</strong></div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2025/10/15-003008/こどもとおでかけギフトKV_1920×1080.png" alt="" onerror="this.parentElement.style.background='#E8D5C0'">
+          <div class="card-overlay">
+            <p class="card-overlay-title"><span style="font-weight:700;color:#F0D070;">はじめての </span>家族おでかけギフト｜アソビュー！</p>
+            <p class="card-overlay-price">10,980円<span class="price-point">（または12,200P）</span></p>
+          </div>
         </div>
       </a>
+
     </div>
   </div>
 </section>
 
+<!-- コンセプトメッセージ -->
 <div class="concept-block">
   <h2>「移動」が、<em>新しい体験</em>の入口になる。</h2>
   <p>KINTOがあれば、行きたい場所に行ける。だから、ずっと気になっていたあの体験に、今日踏み出せる。</p>
 </div>
 
-<section class="section-wrap bg-white" id="special-offers">
+<!-- ═══════════════════════════════
+     Special Offers（既存）
+════════════════════════════════ -->
+<section class="section-wrap" id="special-offers">
   <div class="container">
     <div class="section-head">
-      <div class="section-head-left">
-        <img class="section-icon" src="https://mobima.kinto-jp.com/images/icon/ranking-outline.svg" alt="" onerror="this.style.display='none'">
-        <div class="section-head-texts">
-          <div class="section-head-label">KINTO契約者限定</div>
-          <h2 class="section-head-title">割引メニュー</h2>
-          <p class="section-head-desc">My KINTOのご提示やクーポンコードで各種サービスをお得にご利用いただけます。</p>
+      <div class="section-head-row">
+        <div>
+          <h2 class="section-title-en">Special Offers</h2>
+          <div class="section-title-ja-row">
+            <img src="https://mobima.kinto-jp.com/images/icon/ranking-outline.svg" alt="" onerror="this.style.display='none'">
+            <span class="section-title-ja">割引メニュー</span>
+          </div>
+          <p class="section-desc">KINTOご契約者様限定で、My KINTOのご提示やクーポンコードのご入力で、各種サービスをお得にご利用いただけます。</p>
         </div>
+        <a href="https://mobima.kinto-jp.com/list/special-offers" class="section-more-link" target="_blank">一覧を見る →</a>
       </div>
-      <a href="https://mobima.kinto-jp.com/list/special-offers" class="section-head-link" target="_blank">一覧を見る →</a>
     </div>
     <div class="card-grid">
       <a href="https://mobima.kinto-jp.com/posts/special-offers/6669/toyotarent_preferential" class="card" target="_blank">
-        <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2023/03/10-041503/toyotarent_main2.jpg" alt="" onerror="this.style.background='#eee'">
-        <div class="card-body"><div class="badge-row"><span class="badge badge-gray">レンタル</span></div><p class="card-title">【トヨタレンタカー】安心なトヨタ車を特別価格でレンタル予約！</p><div class="card-price"><strong>20〜50%OFF</strong></div></div>
+        <div class="card-img-wrap"><img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2023/03/10-041503/toyotarent_main2.jpg" alt="" onerror="this.parentElement.style.background='#eee'">
+          <div class="card-overlay"><p class="card-overlay-title">【トヨタレンタカー】安心なトヨタ車を特別価格でレンタル予約！</p><p class="card-overlay-price">20〜50%OFF</p></div>
+        </div>
       </a>
       <a href="https://mobima.kinto-jp.com/posts/special-offers/36945/mushupgolf_discount" class="card" target="_blank">
-        <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2024/12/16-084004/IMG_6983.jpg" alt="" onerror="this.style.background='#eee'">
-        <div class="card-body"><div class="badge-row"><span class="badge badge-gray">ゴルフ</span></div><p class="card-title">【MASH UP GOLF】ゴルフラウンド月額定額サービス</p><div class="card-price">毎月 <strong>1,000円OFF</strong></div></div>
+        <div class="card-img-wrap"><img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2024/12/16-084004/IMG_6983.jpg" alt="" onerror="this.parentElement.style.background='#eee'">
+          <div class="card-overlay"><p class="card-overlay-title">【MASH UP GOLF】ゴルフラウンド月額定額サービス</p><p class="card-overlay-price">毎月 1,000円OFF</p></div>
+        </div>
       </a>
       <a href="https://mobima.kinto-jp.com/posts/lesson/31537/first_driving_school" class="card" target="_blank">
-        <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2022/06/07-083004/FIRSTDRIVING_main1.jpg" alt="" onerror="this.style.background='#eee'">
-        <div class="card-body"><div class="badge-row"><span class="badge badge-gray">レッスン</span></div><p class="card-title">【FDS】出張型ペーパードライバー講習</p><div class="card-price"><strong>5,000〜8,000円OFF</strong></div></div>
+        <div class="card-img-wrap"><img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2022/06/07-083004/FIRSTDRIVING_main1.jpg" alt="" onerror="this.parentElement.style.background='#eee'">
+          <div class="card-overlay"><p class="card-overlay-title">【FDS】出張型ペーパードライバー講習</p><p class="card-overlay-price">5,000〜8,000円OFF</p></div>
+        </div>
       </a>
       <a href="https://mobima.kinto-jp.com/posts/sports/37470/rookie1" class="card" target="_blank">
-        <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2025/03/19-045006/2025rookie1.png" alt="" onerror="this.style.background='#eee'">
-        <div class="card-body"><div class="badge-row"><span class="badge badge-gray">スポーツ</span></div><p class="card-title">【ROOKIE Racing】OFFICIAL ONLINE STORE</p><div class="card-price"><strong>5%OFF</strong></div></div>
+        <div class="card-img-wrap"><img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2025/03/19-045006/2025rookie1.png" alt="" onerror="this.parentElement.style.background='#eee'">
+          <div class="card-overlay"><p class="card-overlay-title">【ROOKIE Racing】OFFICIAL ONLINE STORE</p><p class="card-overlay-price">5%OFF</p></div>
+        </div>
       </a>
     </div>
   </div>
 </section>
 
+<!-- ═══════════════════════════════
+     Point Exchange（既存）
+════════════════════════════════ -->
 <section class="section-wrap bg-gray" id="point-exchange">
   <div class="container">
     <div class="section-head">
-      <div class="section-head-left">
-        <img class="section-icon" src="https://mobima.kinto-jp.com/images/icon/point-change.svg" alt="" onerror="this.style.display='none'">
-        <div class="section-head-texts">
-          <div class="section-head-label">KINTO契約者限定</div>
-          <h2 class="section-head-title">ポイント交換メニュー</h2>
-          <p class="section-head-desc">モビマポイントを使って各種サービスをご利用いただけます。</p>
+      <div class="section-head-row">
+        <div>
+          <h2 class="section-title-en">Point Exchange</h2>
+          <div class="section-title-ja-row">
+            <img src="https://mobima.kinto-jp.com/images/icon/point-change.svg" alt="" onerror="this.style.display='none'">
+            <span class="section-title-ja">ポイント交換メニュー</span>
+          </div>
+          <p class="section-desc">KINTOご契約者様限定で、モビマポイントを使って各種サービスをご利用いただけます。ポイントをお持ちでない場合も、お得にポイントを購入できます。</p>
         </div>
+        <a href="https://mobima.kinto-jp.com/list/point-exchange" class="section-more-link" target="_blank">一覧を見る →</a>
       </div>
-      <a href="https://mobima.kinto-jp.com/list/point-exchange" class="section-head-link" target="_blank">一覧を見る →</a>
     </div>
     <div class="card-grid">
       <a href="https://mobima.kinto-jp.com/posts/leisure/42132/asoview_onsen" class="card" target="_blank">
-        <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2025/10/09-003010/02_温泉2.jpg" alt="" onerror="this.style.background='#eee'">
-        <div class="card-body"><div class="badge-row"><span class="badge badge-gray">レジャー</span></div><p class="card-title">温泉好きにオススメ！ONSEN TICKET(ペア) | アソビュー！ギフト</p><div class="card-price">5,580円 / <strong>6,200P</strong></div></div>
+        <div class="card-img-wrap"><img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2025/10/09-003010/02_温泉2.jpg" alt="" onerror="this.parentElement.style.background='#eee'">
+          <div class="card-overlay"><p class="card-overlay-title">温泉好きにオススメ！ONSEN TICKET(ペア) | アソビュー！ギフト</p><p class="card-overlay-price">5,580円<span class="price-point">（または6,200P）</span></p></div>
+        </div>
+      </a>
+      <a href="https://mobima.kinto-jp.com/posts/leisure/42123/asoview_family" class="card" target="_blank">
+        <div class="card-img-wrap"><img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2025/10/15-003008/こどもとおでかけギフトKV_1920×1080.png" alt="" onerror="this.parentElement.style.background='#eee'">
+          <div class="card-overlay"><p class="card-overlay-title">家族のためのこどもとお出かけギフト｜アソビュー！ギフト</p><p class="card-overlay-price">10,980円<span class="price-point">（または12,200P）</span></p></div>
+        </div>
       </a>
       <a href="https://mobima.kinto-jp.com/posts/leisure/42111/asoview_aquarium" class="card" target="_blank">
-        <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2025/10/15-001009/アクアリウムチケットKV_1920×1080.png" alt="" onerror="this.style.background='#eee'">
-        <div class="card-body"><div class="badge-row"><span class="badge badge-gray">レジャー</span></div><p class="card-title">Aquarium TICKET（ファミリー）｜アソビュー！ギフト</p><div class="card-price">9,900円 / <strong>11,000P</strong></div></div>
+        <div class="card-img-wrap"><img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2025/10/15-001009/アクアリウムチケットKV_1920×1080.png" alt="" onerror="this.parentElement.style.background='#eee'">
+          <div class="card-overlay"><p class="card-overlay-title">Aquarium TICKET（ファミリー）｜アソビュー！ギフト</p><p class="card-overlay-price">9,900円<span class="price-point">（または11,000P）</span></p></div>
+        </div>
+      </a>
+      <a href="https://mobima.kinto-jp.com/posts/leisure/42099/asoview_hoteldinner_pair_special" class="card" target="_blank">
+        <div class="card-img-wrap"><img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2025/10/14-022010/アソビューギフト_1100×688_ホテルディナーギフト-（ペア）Special_mv.png" alt="" onerror="this.parentElement.style.background='#eee'">
+          <div class="card-overlay"><p class="card-overlay-title">ホテルディナーギフト（ペア）Special｜アソビュー！ギフト</p><p class="card-overlay-price">31,500円<span class="price-point">（または35,000P）</span></p></div>
+        </div>
       </a>
       <a href="https://mobima.kinto-jp.com/posts/cleaning-coating/41957/carmate_cleaner" class="card" target="_blank">
-        <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2026/01/19-044506/ガラスくもり止めクリーナー＆ツール_001.jpg" alt="" onerror="this.style.background='#eee'">
-        <div class="card-body"><div class="badge-row"><span class="badge badge-gray">洗車・コーティング</span></div><p class="card-title">ガラスくもり止めクリーナー＆ツールセット | カーメイト</p><div class="card-price">2,970円 / <strong>3,300P</strong></div></div>
+        <div class="card-img-wrap"><img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2026/01/19-044506/ガラスくもり止めクリーナー＆ツール_001.jpg" alt="" onerror="this.parentElement.style.background='#eee'">
+          <div class="card-overlay"><p class="card-overlay-title">ガラスくもり止めクリーナー＆ツールセット | カーメイト</p><p class="card-overlay-price">2,970円<span class="price-point">（または3,300P）</span></p></div>
+        </div>
+      </a>
+      <a href="https://mobima.kinto-jp.com/posts/cleaning-coating/41950/carmate_coating" class="card" target="_blank">
+        <div class="card-img-wrap"><img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2026/01/19-044506/簡単ボディコーティング_001.jpg" alt="" onerror="this.parentElement.style.background='#eee'">
+          <div class="card-overlay"><p class="card-overlay-title">簡単ボディコーティング＆詰替えセット | カーメイト</p><p class="card-overlay-price">5,220円<span class="price-point">（または5,800P）</span></p></div>
+        </div>
       </a>
     </div>
   </div>
 </section>
 
-<section class="section-wrap bg-white" id="general">
+<!-- ═══════════════════════════════
+     General（既存）
+════════════════════════════════ -->
+<section class="section-wrap" id="general">
   <div class="container">
     <div class="section-head">
-      <div class="section-head-left">
-        <img class="section-icon" src="https://mobima.kinto-jp.com/images/icon/icon_general.svg" alt="" onerror="this.style.display='none'">
-        <div class="section-head-texts">
-          <div class="section-head-label">どなたでも</div>
-          <h2 class="section-head-title">一般販売メニュー</h2>
-          <p class="section-head-desc">KINTO契約の有無にかかわらず、どなたでもご購入・ご利用いただけます。</p>
+      <div class="section-head-row">
+        <div>
+          <h2 class="section-title-en">General Offers</h2>
+          <div class="section-title-ja-row">
+            <img src="https://mobima.kinto-jp.com/images/icon/icon_general.svg" alt="" onerror="this.style.display='none'">
+            <span class="section-title-ja">一般販売メニュー</span>
+          </div>
+          <p class="section-desc">KINTO契約の有無にかかわらず、どなたでもご購入・ご利用いただけます。</p>
         </div>
+        <a href="https://mobima.kinto-jp.com/list/general" class="section-more-link" target="_blank">一覧を見る →</a>
       </div>
-      <a href="https://mobima.kinto-jp.com/list/general" class="section-head-link" target="_blank">一覧を見る →</a>
     </div>
     <div class="card-grid">
       <a href="https://mobima.kinto-jp.com/posts/general/39072/kumobii_bagcharm_general" class="card" target="_blank">
-        <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2025/04/15-062506/KMB-1.jpg" alt="" onerror="this.style.background='#eee'">
-        <div class="card-body"><div class="badge-row"><span class="badge badge-gray">KINTOオリジナル</span></div><p class="card-title">【KINTO公式】マスコットキャラクター くもびぃバッグチャーム</p><div class="card-price"><strong>1,200円</strong></div></div>
+        <div class="card-img-wrap"><img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2025/04/15-062506/KMB-1.jpg" alt="" onerror="this.parentElement.style.background='#eee'">
+          <div class="card-overlay"><p class="card-overlay-title">【KINTO公式】マスコットキャラクター くもびぃバッグチャーム</p><p class="card-overlay-price">1,200円</p></div>
+        </div>
       </a>
       <a href="https://mobima.kinto-jp.com/posts/general/35575/kumobii_general" class="card" target="_blank">
-        <img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2024/07/29-002004/kumobii_general_mv.jpg" alt="" onerror="this.style.background='#eee'">
-        <div class="card-body"><div class="badge-row"><span class="badge badge-gray">KINTOオリジナル</span></div><p class="card-title">【KINTO公式】マスコットキャラクター くもびぃ 各種ぬいぐるみ</p><div class="card-price"><strong>1,200円〜</strong></div></div>
+        <div class="card-img-wrap"><img class="card-img" src="https://mobima.kinto-jp.com/file/contents/2024/07/29-002004/kumobii_general_mv.jpg" alt="" onerror="this.parentElement.style.background='#eee'">
+          <div class="card-overlay"><p class="card-overlay-title">【KINTO公式】マスコットキャラクター くもびぃ 各種ぬいぐるみ</p><p class="card-overlay-price">1,200円〜</p></div>
+        </div>
       </a>
     </div>
   </div>
 </section>
 
+<!-- ─── FOOTER ─── -->
 <footer class="site-footer">
   <div class="footer-logos">
     <img src="https://mobima.kinto-jp.com/images/logo/pc/kinto_logo.svg" alt="KINTO" onerror="this.style.display='none'">
